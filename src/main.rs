@@ -188,13 +188,24 @@ fn draw_ui(
         write!(stdout, "\r\n")?;
     } else {
         let end = (scroll + list_height).min(items.len());
+        let size_col_width = 15usize; // "  [1234.56 MB]"
+        let path_col_width = max_width.min(96).saturating_sub(size_col_width).max(10);
+
         for (idx, item) in items.iter().enumerate().take(end).skip(scroll) {
             let is_selected = idx == cursor;
             let project = item.relative_project_path(root);
             let size = format_size(item.size_bytes);
 
-            let line = format!(" {project:<36} [{size:>10}]");
-            let truncated: String = line.chars().take(max_width).collect();
+            let project_display = if project.chars().count() > path_col_width {
+                let head: String = project
+                    .chars()
+                    .take(path_col_width.saturating_sub(3))
+                    .collect();
+                format!("{head}...")
+            } else {
+                project
+            };
+            let line = format!(" {project_display:<path_col_width$}  [{size:>10}]");
 
             if is_selected {
                 queue!(
@@ -203,10 +214,10 @@ fn draw_ui(
                     SetForegroundColor(Color::Black),
                     SetBackgroundColor(Color::Cyan)
                 )?;
-                write!(stdout, ">{truncated}")?;
+                write!(stdout, ">{line}")?;
                 queue!(stdout, SetAttribute(Attribute::Reset), ResetColor)?;
             } else {
-                write!(stdout, " {truncated}")?;
+                write!(stdout, " {line}")?;
             }
             queue!(stdout, Clear(ClearType::UntilNewLine))?;
             write!(stdout, "\r\n")?;
