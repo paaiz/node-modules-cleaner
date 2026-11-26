@@ -1,0 +1,13 @@
+[package]
+name = "node-modules-cleaner"
+version = "1.0.0"
+edition = "2024"
+description = "Fast, interactive CLI tool to scan and delete node_modules folders"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/paaiz/node-modules-cleaner"
+keywords = ["cli", "node_modules", "cleaner", "disk-space", "tui"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+crossterm = "0.28"
